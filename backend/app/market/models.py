@@ -14,6 +14,9 @@ class PriceUpdate:
     price: float
     previous_price: float
     timestamp: float = field(default_factory=time.time)  # Unix seconds
+    # First price seen for this ticker this session (basis for "daily change %").
+    # None when constructed directly without a cache; falls back to `price`.
+    open_price: float | None = None
 
     @property
     def change(self) -> float:
@@ -42,6 +45,7 @@ class PriceUpdate:
             "ticker": self.ticker,
             "price": self.price,
             "previous_price": self.previous_price,
+            "open_price": self.open_price if self.open_price is not None else self.price,
             "timestamp": self.timestamp,
             "change": self.change,
             "change_percent": self.change_percent,
