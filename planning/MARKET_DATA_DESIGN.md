@@ -1357,11 +1357,13 @@ from app.market import PriceCache, create_market_data_source, create_stream_rout
 from app.services.ticker_tracker import TickerTracker
 from app import db  # init_db, watchlist_tickers, position_tickers (DB agent)
 
+price_cache = PriceCache()  # module level: the SSE router needs it before startup
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.init_db()                                   # create + seed if needed
-    cache = PriceCache()
+    cache = price_cache                            # module-level instance, see note below
     source = create_market_data_source(cache)
     tracker = TickerTracker(source, wanted=lambda: db.watchlist_tickers() | db.position_tickers())
     await source.start(sorted(tracker.wanted()))   # watchlist ∪ positions
