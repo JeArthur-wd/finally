@@ -1375,24 +1375,30 @@ async def lifespan(app: FastAPI):
         await source.stop()
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(lifespan=lifespan)
-    cache_ref = ...  # see note below
-    app.include_router(api_router)                 # /api/portfolio, /api/watchlist, /api/chat, ...
+app = FastAPI(lifespan=lifespan)
+app.include_router(api_router)                     # /api/portfolio, /api/watchlist, /api/chat, ...
 
-    @app.get("/api/health")
-    async def health():
-        return {"status": "ok", "market_data": app.state.market.name}
 
-    app.mount("/", StaticFiles(directory="static", html=True), name="static")  # LAST
-    return app
+@app.get("/api/health")
+async def health():
+    return {"status": "ok", "market_data": app.state.market.name}
+
+# the SSE router is included here too (see the note below), then:
+app.mount("/", StaticFiles(directory="static", html=True), name="static")  # LAST
 ```
 
-**Router/cache ordering.** `create_stream_router(cache)` needs the cache, but routes must exist before the static mount. Create the `PriceCache` at module level (it is cheap and inert), pass it to both the router and the lifespan, and start the *source* inside the lifespan:
+**Router/cache ordering.** `create_stream_router(cache)` needs the cache, but routes must exist before the static mount, which happens before the lifespan runs. So create the `PriceCache` at module level (it is cheap and inert), and use that same instance in both the router and the lifespan. Only the *source* is started inside the lifespan:
 
 ```python
-price_cache = PriceCache()
-app = FastAPI(lifespan=lifespan)                   # lifespan uses the same price_cache
+price_cache = PriceCache()                          # module level
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    ...
+    source = create_market_data_source(price_cache) # same instance, not a new PriceCache()
+    ...
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(create_stream_router(price_cache))
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
