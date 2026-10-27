@@ -1,0 +1,42 @@
+# VCS / editor / agent files
+.git
+.github
+.gitignore
+.gitattributes
+.claude
+.vscode
+.idea
+**/.DS_Store
+
+# Secrets - passed at runtime via --env-file, never baked into the image
+.env
+.env.*
+!.env.example
+
+# Runtime database
+db/*.db
+db/*.db-*
+
+# Node / Next.js
+**/node_modules
+frontend/.next
+frontend/out
+frontend/coverage
+
+# Python
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/.coverage
+**/htmlcov
+backend/static
+
+# Tests and docs not needed in the image
+test/
+planning/
+independent-reviwer/
+**/test-results
+**/playwright-report

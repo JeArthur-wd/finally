@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0d1117;
+  --color-panel: #161b22;
+  --color-panel-2: #1c222b;
+  --color-border: #30363d;
+  --color-border-soft: #21262d;
+  --color-text: #e6edf3;
+  --color-muted: #8b949e;
+  --color-faint: #6e7681;
+  --color-up: #26a69a;
+  --color-down: #ef5350;
+  --color-accent: #ecad0a;
+  --color-blue: #209dd7;
+  --color-purple: #753991;
+  --color-purple-hi: #8a47aa;
+
+  --font-sans: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Mono", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --animate-flash-up: flash-up 600ms ease-out;
+  --animate-flash-down: flash-down 600ms ease-out;
+  --animate-pulse-dot: pulse-dot 1.4s ease-in-out infinite;
+
+  @keyframes flash-up {
+    0% { background-color: rgb(38 166 154 / 0.38); }
+    100% { background-color: transparent; }
+  }
+  @keyframes flash-down {
+    0% { background-color: rgb(239 83 80 / 0.38); }
+    100% { background-color: transparent; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Thin, dark scrollbars to match the terminal look. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #30363d transparent;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-flash-up,
+  .animate-flash-down {
+    animation-duration: 1ms;
+  }
+}
